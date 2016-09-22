@@ -1,0 +1,54 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.goodjok'
+
+android {
+    // http://tools.android.com/tech-docs/new-build-system/tips
+    //noinspection GroovyAssignabilityCheck
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    //noinspection GroovyAssignabilityCheck
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion rootProject.ext.targetSdkVersion
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets.main {
+        jniLibs.srcDirs 'src/main/libs'
+        jni.srcDirs = [] // This prevents the auto generation of Android.mk
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+def support_version = "24.2.1"
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile "com.android.support:support-annotations:${support_version}"
+    compile "com.android.support:support-v4:${support_version}"
+
+    compile project(':ijkplayer-java')
+    compile project(':ijkplayer-exo')
+
+//    compile project(':ijkplayer-armv5')
+    compile project(':ijkplayer-armv7a')
+    compile project(':ijkplayer-arm64')
+//    compile project(':ijkplayer-x86')
+    compile project(':ijkplayer-x86_64')
+
+}
+
+//apply from: new File(rootProject.projectDir, "tools/gradle-on-demand.gradle");
