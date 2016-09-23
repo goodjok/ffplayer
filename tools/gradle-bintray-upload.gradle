@@ -42,8 +42,8 @@ artifacts {
 }
 
 bintray {
-    user = "1"
-    key = "1"
+    user = "junhaiyang"
+    key = "aa3488b488b5070c379b6d35223146bf0e076c15"
 
     configurations = ['archives']
 
