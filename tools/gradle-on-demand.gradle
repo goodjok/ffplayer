@@ -28,3 +28,4 @@ gradle.startParameter.taskNames.each { task ->
             break;
     }
 }
+//gradle clean bintrayUpload
