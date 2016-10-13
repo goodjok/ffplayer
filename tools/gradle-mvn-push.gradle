@@ -128,11 +128,11 @@ apply plugin: 'maven'
 //    }
 //}
 //
-//version = VERSION_NAME
-//uploadArchives {
-//    repositories {
-//        ivy {
-//            url "../myRepo"
-//        }
-//    }
-//}
+version = VERSION_NAME
+uploadArchives {
+    repositories {
+        ivy {
+            url "../myRepo"
+        }
+    }
+}
