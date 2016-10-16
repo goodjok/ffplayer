@@ -39,7 +39,7 @@ dependencies {
     compile "com.android.support:support-v4:${support_version}"
 
     compile project(':ijkplayer-java')
-//    compile project(':ijkplayer-exo')
+    compile project(':ijkplayer-exo')
 
 //    compile project(':ijkplayer-armv5')
     compile project(':ijkplayer-armv7a')
@@ -49,5 +49,4 @@ dependencies {
 
 }
 
-//apply from: new File(rootProject.projectDir, "tools/gradle-on-demand.gradle");
-apply from: new File(rootProject.projectDir, "tools/gradle-on-github.gradle");
+apply from: new File(rootProject.projectDir, "tools/gradle-on-build.gradle");
