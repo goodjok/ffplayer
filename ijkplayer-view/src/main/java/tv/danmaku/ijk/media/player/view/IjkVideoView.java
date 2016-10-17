@@ -42,14 +42,14 @@ import java.util.Map;
 
 import tv.danmaku.ijk.media.exo.IjkExoMediaPlayer;
 import tv.danmaku.ijk.media.player.AndroidMediaPlayer;
-import tv.danmaku.ijk.media.player.control.FileMediaDataSource;
-import tv.danmaku.ijk.media.player.control.IMediaController;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 import tv.danmaku.ijk.media.player.Settings;
 import tv.danmaku.ijk.media.player.TextureMediaPlayer;
+import tv.danmaku.ijk.media.player.control.FileMediaDataSource;
+import tv.danmaku.ijk.media.player.control.IMediaController;
 import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
-import tv.danmaku.ijk.media.player.services.MediaPlayerService;
+import tv.danmaku.ijk.media.player.services.MediaPlayerService;;
 
 public class IjkVideoView extends FrameLayout implements MediaController.MediaPlayerControl {
     private String TAG = "IjkVideoView";
@@ -83,6 +83,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private int mSurfaceWidth;
     private int mSurfaceHeight;
     private int mVideoRotationDegree;
+    private IMediaController mMediaController;
     private IMediaPlayer.OnCompletionListener mOnCompletionListener;
     private IMediaPlayer.OnPreparedListener mOnPreparedListener;
     private int mCurrentBufferPercentage;
@@ -93,7 +94,6 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private boolean mCanSeekBack = true;
     private boolean mCanSeekForward = true;
 
-    private IMediaController mMediaController;
     /** Subtitle rendering widget overlaid on top of the video. */
     // private RenderingWidget mSubtitleWidget;
 
@@ -106,9 +106,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     private Settings mSettings;
     private IRenderView mRenderView;
     private int mVideoSarNum;
-    private int mVideoSarDen;
+    private int mVideoSarDen; 
+
+    private long mPrepareStartTime = 0;
+    private long mPrepareEndTime = 0;
 
     private String mUserAgent;
+    private long mSeekStartTime = 0;
+    private long mSeekEndTime = 0;
 
     public IjkVideoView(Context context) {
         super(context);
@@ -295,6 +300,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             mMediaPlayer.setOnErrorListener(mErrorListener);
             mMediaPlayer.setOnInfoListener(mInfoListener);
             mMediaPlayer.setOnBufferingUpdateListener(mBufferingUpdateListener);
+            mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
             mCurrentBufferPercentage = 0;
             String scheme = mUri.getScheme();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -310,6 +316,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
             bindSurfaceHolder(mMediaPlayer, mSurfaceHolder);
             mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mMediaPlayer.setScreenOnWhilePlaying(true);
+            mPrepareStartTime = System.currentTimeMillis();
             mMediaPlayer.prepareAsync();
 
             // REMOVED: mPendingSubtitleTracks
@@ -371,6 +378,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
 
     IMediaPlayer.OnPreparedListener mPreparedListener = new IMediaPlayer.OnPreparedListener() {
         public void onPrepared(IMediaPlayer mp) {
+            mPrepareEndTime = System.currentTimeMillis();
             mCurrentState = STATE_PREPARED;
 
             // Get the capabilities of the player for this stream
@@ -515,6 +523,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
                     mCurrentBufferPercentage = percent;
                 }
             };
+
+    private IMediaPlayer.OnSeekCompleteListener mSeekCompleteListener = new IMediaPlayer.OnSeekCompleteListener() {
+
+        @Override
+        public void onSeekComplete(IMediaPlayer mp) {
+            mSeekEndTime = System.currentTimeMillis();
+        }
+    };
 
     /**
      * Register a callback to be invoked when the media file
@@ -756,6 +772,7 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
     @Override
     public void seekTo(int msec) {
         if (isInPlaybackState()) {
+            mSeekStartTime = System.currentTimeMillis();
             mMediaPlayer.seekTo(msec);
             mSeekWhenPrepared = 0;
         } else {
